@@ -22,7 +22,7 @@ class Snake(arcade.Sprite):
         self.score = 0
 
     def eat(self):
-        self.body_size += 1
+        self.body_size += 2
         self.score += 1
     
     def eatGolabi(self):
@@ -54,20 +54,7 @@ class Snake(arcade.Sprite):
         if self.change_y == -1:
              self.center_y -= self.speed
         elif self.change_y == 1:
-            self.center_y += self.speed
-
-        # if self.center_y < 0:
-        #     self.center_y = SCREEN_HEIGHT
-        # elif self.center_y == SCREEN_HEIGHT:
-        #     self.center_y = 0
-        
-        # if self.center_x < 0:
-        #     self.center_x = SCREEN_WIDTH
-        # elif self.center_x == SCREEN_WIDTH:
-        #     self.center_x = 0
-
-    def scors():
-        pass
+            self.center_y += self.speed     
 
 
 class Apple(arcade.Sprite):
@@ -77,8 +64,8 @@ class Apple(arcade.Sprite):
         self.height = 16
         self.color = arcade.color.RED
         self.r = 8
-        self.center_x = random.randint(3,SCREEN_WIDTH-3)
-        self.center_y = random.randint(3,SCREEN_HEIGHT-3)
+        self.center_x = random.randint(10,SCREEN_WIDTH-10)
+        self.center_y = random.randint(10,SCREEN_HEIGHT-10)
     
     def draw(self):
         arcade.draw_circle_filled(self.center_x, self.center_y, self.r, self.color)
@@ -111,7 +98,7 @@ class Zarar(arcade.Sprite):
 
 class Game(arcade.Window): 
     def __init__(self):
-        super().__init__(width=500 , height=500, title='Snake Game')
+        super().__init__(width=SCREEN_WIDTH , height=SCREEN_WIDTH, title='Snake Game')
         arcade.set_background_color(arcade.color.SAND) 
         self.snake = Snake()
         self.food = Apple()
@@ -119,24 +106,22 @@ class Game(arcade.Window):
         self.zarar = Zarar()
     
     def on_draw(self):       
-        arcade.start_render() 
+        arcade.start_render()
+         
+        if (self.snake.center_x<0) or (self.snake.center_x>SCREEN_WIDTH) or (self.snake.center_y<0) or (self.snake.center_y>SCREEN_HEIGHT):
+            self.snake.score = -1
 
-        if (0 <= self.snake.center_x <= SCREEN_WIDTH) or (0 <= self.snake.center_y <= SCREEN_HEIGHT):
-            out = f"Score: {self.snake.score}"
-            arcade.draw_text(out, 5, 5, arcade.color.BLACK, 15)
+        if self.snake.score >=0:
+            text = f"Score: {self.snake.score}"
+            arcade.draw_text(text, 200, 480, arcade.color.BLACK, font_size=10,align='left')
 
             self.snake.draw()
             self.food.draw()
             self.golabi.draw()
             self.zarar.draw()
-
-        elif (self.snake.center_x < SCREEN_WIDTH) or (0 < self.snake.center_x) or (0 < self.snake.center_y) or(self.snake.center_y < SCREEN_HEIGHT):
-            self.snake.score = -1
-        
         else:
-            arcade.draw_text("Game Over", 0, 250, arcade.color.BLACK, width=600, font_size=20, align='center')
-
-            
+            arcade.draw_text("GAME OVER ... !",-30, 290,arcade.color.RED,width=600,font_size=15,align='center')
+        
 
     def on_update(self, delta_time: float):
         self.snake.move()
@@ -151,19 +136,22 @@ class Game(arcade.Window):
 
         elif arcade.check_for_collision(self.snake,self.zarar):
             self.snake.eatZarar()
-            self.ahah = Zarar()
+            self.zarar = Zarar()
 
 
     def on_key_release(self, key: int, modifiers: int):
         if key == arcade.key.LEFT:
             self.snake.change_x = -1
             self.snake.change_y = 0
+
         elif key == arcade.key.RIGHT:
             self.snake.change_x = 1
             self.snake.change_y = 0
+
         elif key == arcade.key.UP:
             self.snake.change_y = 1
             self.snake.change_x = 0
+        
         elif key == arcade.key.DOWN:
             self.snake.change_y = -1
             self.snake.change_x = 0
